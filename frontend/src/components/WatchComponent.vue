@@ -35,7 +35,38 @@
 </template>
 
 <script>
-
+export default {
+  data() {
+    return {
+      movie: null,           // Store movie details here
+      episodes: [],          // Store episode list here
+      currentEpisode: null,  // Store the currently playing episode
+    };
+  },
+  methods: {
+    fetchMovieData() {
+      const { slug, numberespisode } = this.$route.params; // Get 'slug' and 'numberespisode' from the route params
+      fetch(`http://localhost:3000/watch/${slug}/${numberespisode}`) // Fetch data from the backend using episode number
+        .then((response) => response.json())
+        .then((data) => {
+          this.movie = data.video;          // Store movie data
+          this.episodes = data.episodes;    // Store episode list
+          // Tìm tập hiện tại bằng episode_number từ route params
+          this.currentEpisode = this.episodes.find(episode => episode.episode_number == numberespisode); 
+        })
+        .catch((error) => {
+          console.error('Error fetching movie data:', error);
+        });
+    },
+    playEpisode(episode) {
+      this.currentEpisode = episode; // Update the currently playing episode
+      this.$router.push(`/watch/${this.movie.slug}/${episode.episode_number}`); // Update the URL to reflect the new episode
+    },
+  },
+  mounted() {
+    this.fetchMovieData(); // Fetch the movie data when component is mounted
+  },
+};
 </script>
 
 <style scoped>

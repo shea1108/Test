@@ -1,105 +1,146 @@
 <template>
-  <div>
-    <div class="allcontain">
-    <div class="container text-center my-5">
-      <h1 class="display-4">Watch Anime Online</h1>
-    </div>
-    <!-- Vòng lặp để hiển thị danh sách video -->
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-3 col-md-6 mb-4" v-for="video in videos" :key="video.slug">
-          <div class="card h-100 shadow-sm" >
-            <router-link :to="`/home/${video.slug}`">
-              <img
-                :src="video.img_url"
-                class="card-img-top img-fluid"
-                :alt="video.title"
-                style="height: 200px; object-fit: cover;"
-              />
-            </router-link>
-            <div class="card-body d-flex flex-column">
-              <router-link :to="`/home/${video.slug}`" class="text-dark">
-                <h5 class="card-title">{{ video.title }}</h5>
-              </router-link>
-              <p class="card-text text-muted mb-4">{{ video.description }}</p>
-              <router-link :to="`/home/${video.slug}`" class="btn btn-primary mt-auto">
-                Watch Anime
-              </router-link>
-            </div>
+  <div class="movie-container">
+    <h1>Danh sách phim</h1>
+    <div class="movie-list">
+      <div v-for="movie in movies" :key="movie.id" class="movie-card">
+        <router-link :to="`/movies/${movie.slug}`">
+          <img :src="movie.img_url" alt="Movie Poster" class="movie-poster" />
+        </router-link>
+        <div class="movie-info">
+          <router-link :to="`/movies/${movie.slug}`" class="movie-title">
+            <h2>{{ movie.title }}</h2>
+          </router-link>
+          <p>{{ movie.genre }}</p>
+          <p>{{ movie.description }}</p>
+          <div class="movie-buttons">
+            <router-link :to="`/movies/${movie.slug}`" class="btn btn-watch">Xem ngay</router-link>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>  
 </template>
-<script>
 
+<script>
+export default {
+  data() {
+    return {
+      movies: [] // Biến chứa danh sách phim
+    };
+  },
+  mounted() {
+    console.log("Component mounted");  // Kiểm tra xem component có được mounted không
+    this.fetchMovies();
+  },
+  methods: {
+    async fetchMovies() {
+      try {
+        console.log("Fetching movies...");
+        const response = await fetch('http://localhost:3000/movies'); // Đảm bảo API này trả về dữ liệu
+        const data = await response.json();
+        this.movies = data;
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách phim:', error);
+      }
+    }
+  }
+};
 </script>
 
+
 <style scoped>
-.row{
-  justify-content: space-around;
-}
-.allcontain{
-  background-color: #343a40;
-  width: 70%;
-  margin-left: 15%;
-  border-radius: 10px;
-  padding-bottom: 30px;
-}
-.container {
+/* Style tùy chỉnh cho thẻ phim */
+.movie-container {
   max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
 }
 
-h1 {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-top: 30px;
-  color: #ffffff;
+.movie-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 20px;
+  background-color: #333;
+  padding: 30px 40px 50px 40px;
+  border-radius: 10px;
 }
 
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: none;
+.movie-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
-.card:hover {
+.movie-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+.movie-poster {
+
+  height: 200px;            /* Điều chỉnh chiều cao của ảnh để cân đối */
+  object-fit: cover;        /* Đảm bảo ảnh giữ tỷ lệ mà không bị méo */
+
+} 
+
+.movie-info {
+  padding: 15px;
+  text-align: left;
 }
 
-.card-text {
-  font-size: 0.9rem;
+.movie-info h2 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #007bff;
 }
 
-.btn-primary {
+.movie-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.movie-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-details {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-details:hover {
+  background-color: #218838;
+}
+
+.btn-watch {
   background-color: #007bff;
-  border-color: #007bff;
-  font-size: 0.9rem;
-  padding: 0.5rem 1rem;
+  color: white;
 }
 
-.btn-primary:hover {
+.btn-watch:hover {
   background-color: #0056b3;
-  border-color: #004085;
 }
 
-.card-img-top {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+.movie-title {
+  text-decoration: none;
 }
 
-.card-body {
-  padding: 1.25rem;
-}
-
-.shadow-sm {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+.movie-title:hover h2 {
+  text-decoration: underline;
+  color: #0056b3;
 }
 </style>
