@@ -74,38 +74,41 @@ export default {
       }
     },
     async submitForm() {
-    const formData = new FormData();
-    formData.append('title', this.form.title);
-    formData.append('description', this.form.description);
-    formData.append('img_url', this.form.img_url);
-    formData.append('genre', this.form.genre);
+  const formData = new FormData();
+  formData.append('title', this.form.title);
+  formData.append('description', this.form.description);
+  formData.append('img_url', this.form.img_url);
+  formData.append('genre', this.form.genre);
 
-    this.form.episodes.forEach((episode, index) => {
-        formData.append(`episode_file_${index}`, episode.file);
-        formData.append(`episode_title_${index}`, episode.title);
-        formData.append(`episode_description_${index}`, episode.description);
-    });
+  this.form.episodes.forEach((episode, index) => {
+    formData.append(`episode_file_${index}`, episode.file);
+    formData.append(`episode_title_${index}`, episode.title);
+    formData.append(`episode_description_${index}`, episode.description);
+  });
 
-    console.log("Form Data before sending:");
-    console.log("Title:", this.form.title);
-    console.log("Description:", this.form.description);
-    console.log("Image URL:", this.form.img_url);
-    console.log("Genre:", this.form.genre);
-    console.log("Episodes:", this.form.episodes);
+  // In FormData chi tiết trước khi gửi
+  console.log('Form Data before sending:');
+  for (const pair of formData.entries()) {
+    console.log(`${pair[0]}, ${pair[1]}`);
+  }
 
-    const response = await fetch('http://localhost:3000/video/store', {
-        method: 'POST',
-        body: formData
+  try {
+    const response = await fetch('http://localhost:3000/movies/store', {
+      method: 'POST',
+      body: formData
     });
 
     if (!response.ok) {
-        throw new Error('Failed to submit form');
+      throw new Error('Failed to submit form');
     }
 
     const data = await response.json();
     console.log('Form submitted successfully:', data);
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('There was an error submitting the form. Please check the console for more details.');
+  }
 }
-
 
   }
 };
